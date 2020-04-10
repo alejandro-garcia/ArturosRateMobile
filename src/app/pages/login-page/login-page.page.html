@@ -1,0 +1,32 @@
+<ion-content>
+  <ion-header translucent="true">
+     <ion-toolbar>
+       <ion-title>Arturos Exchange Manager</ion-title>
+       <ion-buttons slot="start">
+          <ion-menu-button autoHide="true"></ion-menu-button>
+       </ion-buttons>
+     </ion-toolbar>
+   </ion-header>
+
+  <form (ngSubmit)="onSubmit()">
+     <ion-card>
+        <ion-card-title mode="md">Registrar tasa cambio actual</ion-card-title>
+        <ion-card-header>Ingreso de Credenciales de Acceso</ion-card-header>      
+        <ion-card-content>
+           <ion-list>
+              <ion-item>
+                 <ion-label>Correo</ion-label>
+                 <ion-input type="email"  placeholder="ingrese correo electronico"  [(ngModel)]="email" name ="txtEmail"></ion-input>                 
+              </ion-item>
+              <ion-item>
+                 <ion-label>Contraseña</ion-label>
+                 <ion-input type="password" [(ngModel)]="password" name="txtPassword"></ion-input>
+              </ion-item>
+           </ion-list>
+        </ion-card-content>
+     </ion-card>
+     <div class="ion-padding">
+        <ion-button expand="block" type="submit" class="ion-no-margin">Ingresar</ion-button>
+     </div>
+  </form>
+</ion-content>

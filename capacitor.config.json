@@ -1,0 +1,8 @@
+{
+  "appId": "com.arturos.ratesmobile",
+  "appName": "ArturosRateMobile",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}

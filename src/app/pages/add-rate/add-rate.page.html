@@ -1,0 +1,32 @@
+<ion-content>
+   <ion-header translucent="true">
+      <ion-toolbar>
+        <ion-title>Arturos Exchange Manager</ion-title>
+        <ion-buttons slot="start">
+           <ion-menu-button autoHide="true"></ion-menu-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+   <form (ngSubmit)="onSubmit()">
+      <ion-card>
+         <ion-card-title mode="md">Registrar tasa cambio actual</ion-card-title>
+         <ion-card-header>Tasa USD para Ventas en cadena de Restaurantes</ion-card-header>      
+         <ion-card-content>
+            <ion-list>
+               <ion-item>
+                  <ion-label>Fecha</ion-label>
+                  <ion-datetime placeholder="Select Date" [(ngModel)]="selectedDate" name ="dtpDate" value={{selectedDate}} ></ion-datetime>
+               </ion-item>
+               <ion-item>
+                  <ion-label>Tasa</ion-label>
+                  <ion-input type="number" [(ngModel)]="newRate" name="txtRate"></ion-input>
+               </ion-item>
+            </ion-list>
+         </ion-card-content>
+      </ion-card>
+      <div class="ion-padding">
+         <ion-button expand="block" type="submit" class="ion-no-margin">Guardar Tasa</ion-button>
+      </div>
+   </form>
+</ion-content>
