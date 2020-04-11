@@ -35,6 +35,10 @@ export class LoginPagePage implements OnInit {
         if (!result){
            this.ShowMessage("warning", "Usuario ó Contraseña Incorrecta");
         }
+      },
+      err=>{
+        console.log("Error Sevice.Login() -> " + err);
+        this.ShowMessage("warning", "Error Usuario ó Contraseña Incorrecta");        
       });
   }
  
