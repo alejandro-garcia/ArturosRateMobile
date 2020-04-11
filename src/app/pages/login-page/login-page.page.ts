@@ -30,7 +30,12 @@ export class LoginPagePage implements OnInit {
       return;
     }
 
-    this.service.Login(this.email, this.password).subscribe();
+    this.service.Login(this.email, this.password)
+      .subscribe((result)=>{
+        if (!result){
+           this.ShowMessage("warning", "Usuario ó Contraseña Incorrecta");
+        }
+      });
   }
  
   async ShowMessage(colorCode: string, message: string){
