@@ -4,8 +4,10 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import * as moment from 'moment';
 import { IRate } from '../models/irate';
 import { Observable, from, of } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators'
+import { switchMap, catchError, mergeMap } from 'rxjs/operators'
 import { AuthenticationService } from './authentication.service';
+import { DataSnapshot } from '@angular/fire/database/interfaces';
+import { ICurrentRate } from '../models/ICurrentRate';
 
 
 @Injectable({
@@ -17,7 +19,7 @@ export class RateService {
   private warehouseCollection: AngularFireList<any>;
   
   constructor(private afAuth: AngularFireAuth, 
-              db: AngularFireDatabase,
+              private db: AngularFireDatabase,
               private authsvc: AuthenticationService) { 
     this.ratesCollection = db.list("currentrates");
     this.warehouseCollection = db.list("warehouses");
@@ -37,8 +39,16 @@ export class RateService {
     return this.warehouseCollection.snapshotChanges();
   }
   
-  GetLastRate(){
-    
+  GetLastRate(): Observable<ICurrentRate>{                  
+    return Observable.create(observer=>{
+     from(this.ratesCollection.query.ref.orderByKey().limitToLast(1).once('value'))
+      .subscribe(f=>{        
+        let snapshot : DataSnapshot = f.val();
+        let rateKey: string = Object.keys(snapshot)[0];        
+        observer.next({ date: moment(rateKey).format('DD/MM/YYYY'),  rate: snapshot[rateKey].rate, updated: snapshot[rateKey].time});
+        observer.complete();
+      });
+    });
   }
 
   Login(email: string, password: string): Observable<boolean> {

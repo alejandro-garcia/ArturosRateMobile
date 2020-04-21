@@ -4,7 +4,9 @@ import { IWarehouseWithId } from 'src/app/models/IWarehouseUpdated';
 import * as moment from 'moment';
 import { Platform } from '@ionic/angular';
 import { from } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { mergeMap, zip } from 'rxjs/operators';
+import { ICurrentRate } from 'src/app/models/ICurrentRate';
+import { SnapshotAction } from '@angular/fire/database/database';
 
 @Component({
   selector: 'app-update-status',
@@ -14,31 +16,24 @@ import { mergeMap } from 'rxjs/operators';
 export class UpdateStatusPage implements OnInit {
 
   private currentRateDate:string;
-
   private warehouses: IWarehouseWithId[];
-  /* = [
-    { id: 101, date: '09/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-    { id: 103, date: '09/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-    { id: 105, date: '09/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-    { id: 107, date: '08/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-    { id: 108, date: '09/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-    { id: 109, date: '09/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-    { id: 110, date: '09/04/2020', modified: '2020-04-09T09:07:32', status: 'success', updated: '2020-04-09T10:06:50' },
-  ] */
-
   private GroupedWarehouses: any[];  
-
   private deviceWidth: number;
+  private lastRate: ICurrentRate;
 
   constructor(private service: RateService, private platform: Platform) { }
 
   ngOnInit() {
-    this.currentRateDate = moment(new Date()).format("DD/MM/YYYY");
+    this.currentRateDate = moment(new Date()).format("DD/MM/YYYY")
+    this.lastRate = {date: 'N/A',rate: 0,updated: 'N/A'}
 
     from(this.platform.ready())
-      .pipe(mergeMap(()=>{
-        return this.service.GetWarehouses();
-      }))
+      .pipe(
+        mergeMap(()=> this.service.GetLastRate()),
+        mergeMap((rateInfo)=>{       
+          this.lastRate = rateInfo;
+          return this.service.GetWarehouses();
+        }))
       .subscribe(data=>{      
         this.warehouses =  data.map(f=>{
           let result : IWarehouseWithId;
