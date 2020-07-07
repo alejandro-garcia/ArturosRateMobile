@@ -17,12 +17,20 @@ export class RateService {
 
   private ratesCollection: AngularFireList<IRate>;
   private warehouseCollection: AngularFireList<any>;
+  private tokensCollection: AngularFireList<any>;
   
   constructor(private afAuth: AngularFireAuth, 
               private db: AngularFireDatabase,
               private authsvc: AuthenticationService) { 
     this.ratesCollection = db.list("currentrates");
     this.warehouseCollection = db.list("warehouses");
+    this.tokensCollection = db.list("notifications");
+  }
+
+  RegisterToken(token: string){
+
+    //this.tokensCollection.push({"token": token, created: moment(new Date()).format("YYYY-MM-DD HH:mm:ss") });
+    this.tokensCollection.set(token, { created: moment(new Date()).format("YYYY-MM-DD HH:mm:ss") });
   }
 
   AddRate(dtKey: string, rate: number): Promise<void>{

@@ -11,6 +11,8 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { FCM } from '@ionic-native/fcm/ngx';
+
 import { environment } from  '../environments/environment';
 import { RateService } from './services/rate.service';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +34,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    RateService
+    RateService,
+    FCM
   ],
   bootstrap: [AppComponent]
 })
