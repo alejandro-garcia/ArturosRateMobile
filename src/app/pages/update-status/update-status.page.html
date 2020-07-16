@@ -41,12 +41,12 @@
       <!-- <a > -->
       <ng-container *ngFor="let wh of whArray; index as j">
         <ion-chip  *ngIf="wh.date == currentRateDate; else noactualizado" outline color="success">
-          <ion-icon  name="fast-food" size="large"></ion-icon>        
+          <ion-icon  name="restaurant" size="large"></ion-icon>        
           <ion-label>{{wh.id}} </ion-label>
         </ion-chip>
         <ng-template #noactualizado>
           <ion-chip outline color="warning">
-            <ion-icon name="fast-food-outline" size="large"></ion-icon>
+            <ion-icon name="restaurant-outline" size="large"></ion-icon>
             <ion-label>{{wh.id}} </ion-label>
           </ion-chip>
         </ng-template>  
