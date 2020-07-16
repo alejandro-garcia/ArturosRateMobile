@@ -8,13 +8,19 @@
     <ion-content>
        <ion-list>
           <ion-item>
-            <ion-label [routerLink]="['/member/add']">Añadir Tasa</ion-label> 
+            <ion-menu-toggle>
+               <ion-label [routerLink]="['/member/add']">Añadir Tasa</ion-label> 
+            </ion-menu-toggle>
           </ion-item>
           <ion-item>
-            <ion-label [routerLink]="['/status']">Consultar Estatus de Replicación</ion-label>
+            <ion-menu-toggle>
+               <ion-label [routerLink]="['/status']">Consultar Estatus de Replicación</ion-label>
+            </ion-menu-toggle>
           </ion-item>          
           <ion-item>
-            <ion-label (click)="logout()" >Cerrar Sesión</ion-label>
+            <ion-menu-toggle>
+               <ion-label (click)="logout()" >Cerrar Sesión</ion-label>
+            </ion-menu-toggle>
           </ion-item>
        </ion-list>
     </ion-content>

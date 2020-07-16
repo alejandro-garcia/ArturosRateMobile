@@ -7,6 +7,7 @@ import { AuthenticationService } from './services/authentication.service';
 import { Router } from '@angular/router';
 import { FCM } from '@ionic-native/fcm/ngx';
 import { RateService } from './services/rate.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
@@ -75,6 +76,25 @@ export class AppComponent {
   }
   logout(){
     console.log("app.component/logout");
-    this.authService.logout();
+    let self = this;
+    
+    this.authService.logout()
+      .then(()=>{
+        self.ShowMessage('success','Cierre de Sesión Completado!');
+      })
+      .catch(err=>{
+        self.ShowMessage('danger','Error cerrando session... ' + err);
+      })
   }
+
+  async ShowMessage(colorCode: string, message: string){
+    const toast = await (new ToastController()).create(
+       {
+          color: colorCode,
+          message: message,
+          duration: 3000                
+       }
+    );
+    toast.present();
+}
 }
