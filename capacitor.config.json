@@ -1,6 +1,6 @@
 {
   "appId": "com.arturos.ratesmobile",
-  "appName": "ArturosRateMobile",
+  "appName": "Cambio de Tasas",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
