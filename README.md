@@ -5,7 +5,8 @@
 <p align="center">
     ArturosRateMobile
 </p>
-## Installation📋
+
+## Install 📋
 
 ```bash
 
