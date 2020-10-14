@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { RateService } from 'src/app/services/rate.service';
+//
+import { AlertController, ToastController } from '@ionic/angular';
+//
 import  * as  moment from 'moment';
-import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-add-rate',
@@ -10,61 +12,142 @@ import { ToastController } from '@ionic/angular';
 })
 export class AddRatePage implements OnInit {
 
-  private newRate: number;
-  selectedDate: string;
+   private newRate: number;
+   selectedDate: string;
 
-  constructor(private service: RateService) { 
+   constructor(private service: RateService, public alertController: AlertController) {}
 
-  }
+   ngOnInit() {
+      this.selectedDate = moment(new Date()).format("YYYY-MM-DD");
+   }
 
-  ngOnInit() {
-     this.selectedDate = moment(new Date()).format("YYYY-MM-DD");
-  }
+   onSubmit(){
+      console.info("Ejecutando submit");
+      console.info("===================");
+      console.info("selectedDate: ", this.selectedDate);
+      console.info("newRate: ", this.newRate);
+      console.info("===================");
 
-  onSubmit(){
-     console.log("Ejecutando submit");
-     console.log("selectedDate: ", this.selectedDate);
-     console.log("newRate: ", this.newRate);
+      const Momentjs = moment();
+      let self = this;  //TODO: investigar como evitar esto... si uso el bind me falla el set() de firebase.
 
-     if (!this.selectedDate || !this.newRate)
-       return;
+      if(this.newRate == null || this.newRate == undefined || this.newRate == 0){
+         self.ShowMessage('danger', "Ingrese una Tasa valida por favor.",3200);
+      }
 
-     if (moment(this.selectedDate).isBefore(new Date(), 'day')){
-        this.ShowMessage('warning', 'No puede registrar una fecha en el pasado');
-        return;
-     }
+      if (!this.selectedDate || !this.newRate)
+         return;
 
-     let daysBetween = moment(this.selectedDate, "YYYY-MM-DD").diff(moment(new Date()).startOf('day'), 'days');
-     if (daysBetween > 3){
-        this.ShowMessage('warning', 'La fecha elegida esta muy a futuro');
-        return;
-     }
-   
-     let dtKey: string =  moment(this.selectedDate).format("YYYYMMDD");   
+      if (moment(this.selectedDate).isBefore(new Date(), 'day')){
+         this.ShowMessage('warning', 'No puede registrar una fecha en el pasado',0);
+         return;
+      }
 
-     let self = this;  //TODO: investigar como evitar esto... si uso el bind me falla el set() de firebase.
+      let daysBetween = moment(this.selectedDate, "YYYY-MM-DD").diff(moment(new Date()).startOf('day'), 'days');
+      if (daysBetween > 3){
+         this.ShowMessage('warning', 'La fecha elegida esta muy a futuro',0);
+         return;
+      }
+      
+      let dtKey: string =  moment(this.selectedDate).format("YYYYMMDD");   
+
+      const dateNow = Momentjs.format('YYYY-MM-DD').replace("-","").replace("-","");
+      const timeNow = Momentjs.format('HH:mm');
+      const timeBegin = moment(timeNow, 'HH:mm');
+      const timeClosed = moment('10:36', 'HH:mm');//9am tope
+      console.log(dateNow);
+      console.log(timeNow);
+      console.log(dtKey);
+      //console.log(this.selectedDate.toString());//Devuelve Milisegundos
+      //
+      
+      if(dtKey == dateNow){
+         //this.pressAlertConfirm(self,this.service,dtKey,this.newRate,timeBegin,timeClosed);
+         this.pressAlertConfirm(self,timeBegin,timeClosed);
+      }else{
+         console.info("Fecha distinta a la de hoy.");
+         if(this.isBeforeOrSameHours(timeBegin,timeClosed)){
+            self.ShowMessage('success','Nueva Tasa Guardada con Exito!', 0);
+            /*this.service.AddRate(dtKey, this.newRate)
+               .then(async function(){
+                  console.log("success");
+                  self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
+
+               })
+               .catch(async err =>{
+                  console.log(err);
+                  self.ShowMessage('danger', err);
+               });*/
+         }else{
+            self.ShowMessage('danger', "El horario para cargar tasa ya paso. Intente mas tarde.", 3200);
+         }
+      }
      
-     this.service.AddRate(dtKey, this.newRate)
-       .then(async function(){
-          console.log("success");
-          self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
+   }
 
-       })
-       .catch(async err =>{
-          console.log(err);
-          self.ShowMessage('danger', err);
-       });
-  }
-
-   async ShowMessage(colorCode: string, message: string){
+   async ShowMessage(colorCode: string, message: string, duration : number){
       const toast = await (new ToastController()).create(
          {
             color: colorCode,
             message: message,
-            duration: 3000                
+            duration: duration == 0 ? duration = 3000 : duration
          }
       );
       toast.present();
-  }
-}
+   }
 
+   //async pressAlertConfirm(self,servicioTasa,dtKey,newRate,timeBegin,timeClosed){
+   async pressAlertConfirm(self,timeBegin,timeClosed){
+      console.log("Validacion: -> pressAlertConfirm");
+      const alert = await this.alertController.create(
+         {
+            header : 'Confirmar',
+            message : '<strong>¿Seguro quiere usar la fecha de hoy para la Tasa?</strong>',
+            buttons : [
+               {
+                  text : 'Cancel',
+                  role : 'Cancel',
+                  cssClass : 'secondary',
+                  handler : (e) => {
+                     console.info("Ey bro cancelaste!!")
+                  }
+               },
+               {
+                  text : 'Continuar',
+                  handler : () => {
+                     if(this.isBeforeOrSameHours(timeBegin,timeClosed)){
+                        /*self.servicioTasa.AddRate(self.dtKey, self.newRate)
+                           .then(async function(){
+                              console.log("success");
+                              self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
+                           })
+                           .catch(async err =>{
+                              console.log(err);
+                              self.ShowMessage('danger', err);
+                           });*/
+                           self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
+                     }else{
+                        self.ShowMessage('danger', "El horario para cargar tasa ya paso. Intente mas tarde.");
+                     }
+                  }
+               }
+            ]
+         }
+      );
+      
+      await alert.present();
+      let result = await alert.onDidDismiss();
+      console.log(result);
+   
+   }
+
+   isBeforeOrSameHours(timeBegin,timeClosed){
+      if(!timeBegin.isSameOrBefore(timeClosed)){
+         console.trace("La Hora es mayor a la permitida -> " + timeClosed);
+         return false;
+      }else{
+         console.log("La hora esta dentro del rango." + timeBegin);
+         return true;
+      }
+   }
+}
