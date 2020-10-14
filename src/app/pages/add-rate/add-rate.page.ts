@@ -54,10 +54,10 @@ export class AddRatePage implements OnInit {
       const dateNow = Momentjs.format('YYYY-MM-DD').replace("-","").replace("-","");
       const timeNow = Momentjs.format('HH:mm');
       const timeBegin = moment(timeNow, 'HH:mm');
-      const timeClosed = moment('10:36', 'HH:mm');//9am tope
-      console.log(dateNow);
-      console.log(timeNow);
-      console.log(dtKey);
+      const timeClosed = moment('11:05', 'HH:mm');//9am tope
+      //console.log(dateNow);
+      //console.log(timeNow);
+      //console.log(dtKey);
       //console.log(this.selectedDate.toString());//Devuelve Milisegundos
       //
       
@@ -65,24 +65,18 @@ export class AddRatePage implements OnInit {
          //this.pressAlertConfirm(self,this.service,dtKey,this.newRate,timeBegin,timeClosed);
          this.pressAlertConfirm(self,timeBegin,timeClosed);
       }else{
-         console.info("Fecha distinta a la de hoy.");
-         if(this.isBeforeOrSameHours(timeBegin,timeClosed)){
-            self.ShowMessage('success','Nueva Tasa Guardada con Exito!', 0);
-            /*this.service.AddRate(dtKey, this.newRate)
-               .then(async function(){
-                  console.log("success");
-                  self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
-
-               })
-               .catch(async err =>{
-                  console.log(err);
-                  self.ShowMessage('danger', err);
-               });*/
-         }else{
-            self.ShowMessage('danger', "El horario para cargar tasa ya paso. Intente mas tarde.", 3200);
-         }
-      }
-     
+         console.info("Fecha distinta a la de hoy.");               
+         
+         this.service.AddRate(dtKey, this.newRate)
+            .then(async function(){
+               console.log("success");
+               self.ShowMessage('success','Nueva Tasa Guardada con Exito!',3200);
+            })
+            .catch(async err =>{
+               console.log(err);
+               self.ShowMessage('danger', err, 3500);
+            });
+      }     
    }
 
    async ShowMessage(colorCode: string, message: string, duration : number){
@@ -116,7 +110,7 @@ export class AddRatePage implements OnInit {
                   text : 'Continuar',
                   handler : () => {
                      if(this.isBeforeOrSameHours(timeBegin,timeClosed)){
-                        /*self.servicioTasa.AddRate(self.dtKey, self.newRate)
+                        self.servicioTasa.AddRate(self.dtKey, self.newRate)
                            .then(async function(){
                               console.log("success");
                               self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
@@ -124,7 +118,7 @@ export class AddRatePage implements OnInit {
                            .catch(async err =>{
                               console.log(err);
                               self.ShowMessage('danger', err);
-                           });*/
+                           });
                            self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
                      }else{
                         self.ShowMessage('danger', "El horario para cargar tasa ya paso. Intente mas tarde.");

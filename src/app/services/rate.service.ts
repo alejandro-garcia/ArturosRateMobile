@@ -35,7 +35,7 @@ export class RateService {
 
   AddRate(dtKey: string, rate: number): Promise<void>{
            
-    let timeFmt = moment(new Date()).format('YYYYMMDD') + 'T';
+    let timeFmt = moment(new Date()).format('YYYY-MM-DD') + 'T';
     timeFmt += moment(new Date()).format('HH:mm:ss');
 
     let rateObj: IRate =  { source: 'mobile', rate: rate, time: timeFmt };
