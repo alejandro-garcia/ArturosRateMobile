@@ -32,7 +32,7 @@ export class AddRatePage implements OnInit {
       let self = this;  //TODO: investigar como evitar esto... si uso el bind me falla el set() de firebase.
 
       if(this.newRate == null || this.newRate == undefined || this.newRate == 0){
-         self.ShowMessage('danger', "Ingrese una Tasa valida por favor.",3200);
+         self.ShowMessage('danger', "Ingrese una Tasa valida por favor.",0);
       }
 
       if (!this.selectedDate || !this.newRate)
@@ -70,11 +70,11 @@ export class AddRatePage implements OnInit {
          this.service.AddRate(dtKey, this.newRate)
             .then(async function(){
                console.log("success");
-               self.ShowMessage('success','Nueva Tasa Guardada con Exito!',3200);
+               self.ShowMessage('success','Nueva Tasa Guardada con Exito!',0);
             })
             .catch(async err =>{
                console.log(err);
-               self.ShowMessage('danger', err, 3500);
+               self.ShowMessage('danger', err, 2000);
             });
       }     
    }
@@ -84,7 +84,7 @@ export class AddRatePage implements OnInit {
          {
             color: colorCode,
             message: message,
-            duration: duration == 0 ? duration = 3000 : duration
+            duration: duration == 0 ? duration = 1500 : duration
          }
       );
       toast.present();
@@ -111,13 +111,13 @@ export class AddRatePage implements OnInit {
                   handler : () => {
                      if(this.isBeforeOrSameHours(timeBegin,timeClosed)){
                         self.servicioTasa.AddRate(self.dtKey, self.newRate)
-                           .then(async function(){
+                           .then(() => {
                               console.log("success");
-                              self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
+                              this.ShowMessage('success','Nueva Tasa Guardada con Exito!',0);
                            })
-                           .catch(async err =>{
+                           .catch(err =>{
                               console.log(err);
-                              self.ShowMessage('danger', err);
+                              this.ShowMessage('danger', err,0);
                            });
                            self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
                      }else{
