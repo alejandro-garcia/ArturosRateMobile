@@ -119,9 +119,9 @@ export class AddRatePage implements OnInit {
                               console.log(err);
                               this.ShowMessage('danger', err,0);
                            });
-                           self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
+                           this.ShowMessage('success','Nueva Tasa Guardada con Exito!',0);
                      }else{
-                        self.ShowMessage('danger', "El horario para cargar tasa ya paso. Intente mas tarde.");
+                        this.ShowMessage('danger', "El horario para cargar tasa ya paso. Intente mas tarde.",0);
                      }
                   }
                }
