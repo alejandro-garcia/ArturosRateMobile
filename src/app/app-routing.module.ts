@@ -23,6 +23,11 @@ const routes: Routes = [
     path: 'messages',
     loadChildren: () => import('./pages/messages/messages.module').then( m => m.MessagesPageModule)
   },
+  {
+    path: 'exclude-rest',
+    loadChildren: () => import('./pages/exclude-rest/exclude-rest.module').then( m => m.ExcludeRestPageModule)
+  },
+
 ];
 
 @NgModule({

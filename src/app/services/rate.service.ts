@@ -6,7 +6,9 @@ import { IRate } from '../models/irate';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, catchError, mergeMap } from 'rxjs/operators'
 import { AuthenticationService } from './authentication.service';
-import { DataSnapshot } from '@angular/fire/database/interfaces';
+//
+import { DatabaseSnapshotExists, DataSnapshot } from '@angular/fire/database/interfaces';
+//
 import { ICurrentRate } from '../models/ICurrentRate';
 
 
@@ -18,6 +20,9 @@ export class RateService {
   private ratesCollection: AngularFireList<IRate>;
   private warehouseCollection: AngularFireList<any>;
   private tokensCollection: AngularFireList<any>;
+  //
+  private dataExist: DatabaseSnapshotExists<any>;
+  private deleteWarehouseById: AngularFireList<any>;
   
   constructor(private afAuth: AngularFireAuth, 
               private db: AngularFireDatabase,
@@ -81,5 +86,13 @@ export class RateService {
                  }))                      
         }
       }));
+  }
+
+  async DeleteWarehouse(codeRest : string){
+    //exists():remove()
+    // return this.dataExist.exists(codeRest) ? await deleteWarehouseById.remove(codeRest) : false 
+    console.log("en construccion")
+    console.log(codeRest)
+    return true;
   }
 }
