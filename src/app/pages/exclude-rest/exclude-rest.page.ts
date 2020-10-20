@@ -1,16 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
-import { AlertController, IonicModule, Platform, ToastController } from '@ionic/angular';
-
-import { ExcludeRestPageRoutingModule } from './exclude-rest-routing.module';
 import { RateService } from 'src/app/services/rate.service';
-import * as moment from 'moment';
-import { from } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { IWarehouseWithId } from 'src/app/models/IWarehouseUpdated';
-import { ICurrentRate } from 'src/app/models/ICurrentRate';
+import { MenssageService } from 'src/app/services/menssage.service';
+import { AlertController, NavController, Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-exclude-rest',
@@ -20,55 +11,44 @@ import { ICurrentRate } from 'src/app/models/ICurrentRate';
 export class ExcludeRestPage implements OnInit {
 
   private excludedRest : string;
+  private dataRestaurantsExcluded;
+  private dataRestaurants;
   //
-  private currentRateDate:string;
-  private warehouses: IWarehouseWithId[];
-  private GroupedWarehouses: any[];  
+  private restaurantsExcluded = this.service.GetWarehousesEX();
+  private restaurants = this.service.GetWarehouses();
   private deviceWidth: number;
-  private lastRate: ICurrentRate;
+  private GroupedWarehouses: any[];  
 
-  constructor(private service: RateService, public alertController: AlertController,private platform: Platform) {}
+  constructor(
+    private service: RateService, private menssageService : MenssageService, 
+    public alertController: AlertController,  private platform: Platform, 
+    public navCtrl: NavController) {}
 
   ngOnInit() {
 
-    /*** WAREHOUSES ***/
+    this.restaurantsExcluded.subscribe(
+      data =>{
 
-      this.currentRateDate = moment(new Date()).format("DD/MM/YYYY")
-      this.lastRate = {date: 'N/A',rate: 0,updated: 'N/A'}
-
-      from(this.platform.ready())
-        .pipe(
-          mergeMap(()=> this.service.GetLastRate()),
-          mergeMap((rateInfo)=>{       
-            this.lastRate = rateInfo;
-            return this.service.GetWarehouses();
-          }))
-        .subscribe(data=>{      
-          this.warehouses =  data.map(f=>{
-            let result : IWarehouseWithId;
-            result= { id: f.payload.key, ...f.payload.val()};
+        this.dataRestaurantsExcluded = data.map(
+          obj=>{
+            let result;
+            result= { id: obj.key};
             return result;
-          });
+          }
+        );
 
-          let rowSize: number = 3;
-          this.deviceWidth = this.platform.width();
-          console.log("deviceWidth:" + this.deviceWidth.toString())
+        let rowSize: number = 3;
+        this.deviceWidth = this.platform.width();
+        //console.log("deviceWidth:" + this.deviceWidth.toString());
+        if (this.deviceWidth >= 720)
+          rowSize = 5;
+        else if(this.deviceWidth > 480)
+          rowSize = 4;
           
-          if (this.deviceWidth >= 720)
-            rowSize = 5;
-          else if(this.deviceWidth > 480)
-            rowSize = 4;
-            
-          this.GroupedWarehouses = this.splitBy(rowSize,this.warehouses);
+        this.GroupedWarehouses = this.splitBy(rowSize,this.dataRestaurantsExcluded);
+      }
+    );
 
-          console.log(this.GroupedWarehouses);
-        }, 
-        err=>{
-          console.log("error...");
-          console.log(err);
-        }
-      )
-  
   }
 
   onSubmit(){
@@ -76,22 +56,80 @@ export class ExcludeRestPage implements OnInit {
       console.info("===================");
       console.info("excludedRest: ", this.excludedRest);
       console.info("===================");
-
       let self = this;
-      const excluidos = ["111", "222", "333"]
-      const noExcluidos = ["444","555","666"]
 
-      const rest = this.service.GetWarehouses();
-      console.log(rest);
+      this.restaurantsExcluded.subscribe(
+        data =>{
+          this.dataRestaurantsExcluded = data.map(
+            obj => { let result; result= { id: obj.key}; return result; }
+          );
+          //
+          const prueba = this.dataRestaurantsExcluded.find(e=> e.id == this.excludedRest.trim().toString()) ? "excluido" : this.excludedRest;
+          console.log(prueba)
+          if(prueba == "excluido"){
+            this.menssageService.ShowMessage('warning', "Este Restaurante ya esta Excluido", 0);
+          }else{
+            this.restaurants.subscribe(
+              data =>{
+                this.dataRestaurants = data.map(
+                  obj=>{
+                    let result;
+                    result= { id: obj.key};
+                    return result;
+                  }
+                );
+                //
+                const prueba2 = this.dataRestaurants.find(e=> e.id == this.excludedRest.toString());
+                if(prueba2){
+                  this.pressAlertConfirm();
+                }else{
+                  this.menssageService.ShowMessage('warning','Este Restaurant No existe.',0)
+                }
+            });
+          }
 
-      const excludedRest = excluidos.find(e=> e == this.excludedRest.toString()) ? "excluido" : this.excludedRest;
+        }
+      );
+  
+  }
+
+  /* FUNCTIONS */
+
+  async pressAlertConfirm(){
+      console.log("Validacion: -> pressAlertConfirm");
+      const alert = await this.alertController.create(
+         {
+            header : 'Confirmar',
+            message : '<strong>¿Quieres excluir a '+ this.excludedRest + ' ?</strong>',
+            buttons : [
+               {
+                  text : 'Cancel',
+                  role : 'Cancel',
+                  cssClass : 'secondary',
+                  handler : (e) => {
+                     console.info("Ey bro cancelaste!!")
+                  }
+               },
+               {
+                  text : 'Continuar',
+                  handler : () => {
+                   if(this.service.DeleteWarehouse(this.excludedRest.trim().toString())){
+                     if(this.service.AddExcludedRest(this.excludedRest.trim().toString())){
+                       console.log("good");
+                     }
+                   }else{
+                    console.log("ERROR!")
+                   }
+                  }
+               }
+            ]
+         }
+      );
       
-      if( excludedRest == "excluido"){
-        self.ShowMessage('danger', "ya se encuentra excluido", 0);
-      }else{
-        !this.service.DeleteWarehouse(excludedRest.toString()) ? self.ShowMessage('danger', "Error", 0) : self.ShowMessage('success','Se ha excluido',0)
-      }
-
+      await alert.present();
+      let result = await alert.onDidDismiss();
+      console.log(result);
+   
   }
 
   splitBy(size: number, list: any[]){
@@ -103,15 +141,15 @@ export class ExcludeRestPage implements OnInit {
     }, []);
   }
 
-  async ShowMessage(colorCode: string, message: string, duration : number){
-      const toast = await (new ToastController()).create(
-         {
-            color: colorCode,
-            message: message,
-            duration: duration == 0 ? duration = 3000 : duration
-         }
-      );
-      toast.present();
+  doRefresh(event){
+    console.log('Begin async operation');
+
+    setTimeout(() => {
+      this.navCtrl.navigateRoot("exclude-rest");
+      event.target.complete();  
+      console.log("refresh")
+    },3000);
+    
   }
 
 }

@@ -21,16 +21,25 @@ export class RateService {
   private warehouseCollection: AngularFireList<any>;
   private tokensCollection: AngularFireList<any>;
   //
-  private dataExist: DatabaseSnapshotExists<any>;
-  private deleteWarehouseById: AngularFireList<any>;
+  //  private dataExist: DatabaseSnapshotExists<any>;
+  //  private deleteWarehouseById: AngularFireList<any>;
+  private warehouseCollectionEX: AngularFireList<any>;
+  private warehouseCollectionDEV: AngularFireList<any>;
   
-  constructor(private afAuth: AngularFireAuth, 
-              private db: AngularFireDatabase,
-              private authsvc: AuthenticationService) { 
-    this.ratesCollection = db.list("currentrates");
-    this.warehouseCollection = db.list("warehouses");
-    this.tokensCollection = db.list("notifications");
-  }
+  constructor(
+    private afAuth: AngularFireAuth, 
+    private db: AngularFireDatabase,
+    private authsvc: AuthenticationService
+    ){ 
+      this.ratesCollection = db.list("currentrates");
+      this.warehouseCollection = db.list("warehouses");
+      //
+      this.warehouseCollectionEX = db.list("devwarehousesEX");
+      this.warehouseCollectionDEV = db.list("devwarehouses");
+      
+      //
+      this.tokensCollection = db.list("notifications");
+    }
 
   RegisterToken(token: string){
 
@@ -47,7 +56,17 @@ export class RateService {
 
     return this.ratesCollection.set(dtKey, rateObj);
   } 
-
+  //
+  GetWarehousesEX():Observable<SnapshotAction<any>[]>{
+    return this.warehouseCollectionEX.snapshotChanges();
+  }
+  DeleteWarehouse(warehouse){
+    return this.warehouseCollectionDEV.remove(warehouse);
+  }
+  AddExcludedRest(warehouse){
+    return this.warehouseCollectionEX.set(warehouse, "excluido");
+  }
+  //
   GetWarehouses():Observable<SnapshotAction<any>[]>{
     return this.warehouseCollection.snapshotChanges();
   }
@@ -86,13 +105,5 @@ export class RateService {
                  }))                      
         }
       }));
-  }
-
-  async DeleteWarehouse(codeRest : string){
-    //exists():remove()
-    // return this.dataExist.exists(codeRest) ? await deleteWarehouseById.remove(codeRest) : false 
-    console.log("en construccion")
-    console.log(codeRest)
-    return true;
   }
 }
