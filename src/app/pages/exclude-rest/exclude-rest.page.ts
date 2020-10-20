@@ -64,9 +64,9 @@ export class ExcludeRestPage implements OnInit {
             obj => { let result; result= { id: obj.key}; return result; }
           );
           //
-          const prueba = this.dataRestaurantsExcluded.find(e=> e.id == this.excludedRest.trim().toString()) ? "excluido" : this.excludedRest;
-          console.log(prueba)
-          if(prueba == "excluido"){
+          const filterRestEX = this.dataRestaurantsExcluded.find(e=> e.id == this.excludedRest.trim().toString()) ? "excluido" : this.excludedRest;
+          console.log(filterRestEX)
+          if(filterRestEX == "excluido"){
             this.menssageService.ShowMessage('warning', "Este Restaurante ya esta Excluido", 0);
           }else{
             this.restaurants.subscribe(
@@ -79,8 +79,8 @@ export class ExcludeRestPage implements OnInit {
                   }
                 );
                 //
-                const prueba2 = this.dataRestaurants.find(e=> e.id == this.excludedRest.toString());
-                if(prueba2){
+                const filterRest = this.dataRestaurants.find(e=> e.id == this.excludedRest.toString());
+                if(filterRest){
                   this.pressAlertConfirm();
                 }else{
                   this.menssageService.ShowMessage('warning','Este Restaurant No existe.',0)
@@ -115,10 +115,12 @@ export class ExcludeRestPage implements OnInit {
                   handler : () => {
                    if(this.service.DeleteWarehouse(this.excludedRest.trim().toString())){
                      if(this.service.AddExcludedRest(this.excludedRest.trim().toString())){
-                       console.log("good");
+                       this.menssageService.ShowMessage('success','Restaurante Excluido con Exito!',0);
+                     }else{
+                       this.menssageService.ShowMessage('danger', "Hubo un Error, intente mas tarde.", 0);
                      }
                    }else{
-                    console.log("ERROR!")
+                     this.menssageService.ShowMessage('danger', "Hubo un Error, intente mas tarde.", 0);
                    }
                   }
                }
