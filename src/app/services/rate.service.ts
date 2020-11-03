@@ -31,7 +31,8 @@ export class RateService {
     private db: AngularFireDatabase,
     private authsvc: AuthenticationService
     ){ 
-      this.ratesCollection = db.list("currentrates");
+      //this.ratesCollection = db.list("currentrates");
+      this.ratesCollection = db.list("devcurrentrates");
       this.warehouseCollection = db.list("warehouses");
       //
       this.warehouseCollectionEX = db.list("devwarehousesEX");
@@ -48,7 +49,9 @@ export class RateService {
   }
 
   AddRate(dtKey: string, rate: number): Promise<void>{
-           
+
+    console.log(dtKey);
+    console.log(rate);
     let timeFmt = moment(new Date()).format('YYYY-MM-DD') + 'T';
     timeFmt += moment(new Date()).format('HH:mm:ss');
 

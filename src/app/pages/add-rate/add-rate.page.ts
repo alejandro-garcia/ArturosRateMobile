@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RateService } from 'src/app/services/rate.service';
 //
 import { AlertController, ToastController } from '@ionic/angular';
+import { ModalController, NavController, Platform } from '@ionic/angular';
 //
 import  * as  moment from 'moment';
 
@@ -15,7 +16,7 @@ export class AddRatePage implements OnInit {
    private newRate: number;
    selectedDate: string;
 
-   constructor(private service: RateService, public alertController: AlertController) {}
+   constructor(private service: RateService, public alertController: AlertController,public navCtrl: NavController) {}
 
    ngOnInit() {
       this.selectedDate = moment(new Date()).format("YYYY-MM-DD");
@@ -54,7 +55,7 @@ export class AddRatePage implements OnInit {
       const dateNow = Momentjs.format('YYYY-MM-DD').replace("-","").replace("-","");
       const timeNow = Momentjs.format('HH:mm');
       const timeBegin = moment(timeNow, 'HH:mm');
-      const timeClosed = moment('11:05', 'HH:mm');//9am tope
+      const timeClosed = moment('12:05', 'HH:mm');//9am tope
       //console.log(dateNow);
       //console.log(timeNow);
       //console.log(dtKey);
@@ -63,7 +64,7 @@ export class AddRatePage implements OnInit {
       
       if(dtKey == dateNow){
          //this.pressAlertConfirm(self,this.service,dtKey,this.newRate,timeBegin,timeClosed);
-         this.pressAlertConfirm(self,timeBegin,timeClosed);
+         this.pressAlertConfirm(self,timeBegin,timeClosed,dtKey);
       }else{
          console.info("Fecha distinta a la de hoy.");               
          
@@ -84,14 +85,14 @@ export class AddRatePage implements OnInit {
          {
             color: colorCode,
             message: message,
-            duration: duration == 0 ? duration = 3000 : duration
+            duration: duration == 0 ? duration = 1000 : duration
          }
       );
       toast.present();
    }
 
    //async pressAlertConfirm(self,servicioTasa,dtKey,newRate,timeBegin,timeClosed){
-   async pressAlertConfirm(self,timeBegin,timeClosed){
+   async pressAlertConfirm(self,timeBegin,timeClosed,dtKey){
       console.log("Validacion: -> pressAlertConfirm");
       const alert = await this.alertController.create(
          {
@@ -110,7 +111,7 @@ export class AddRatePage implements OnInit {
                   text : 'Continuar',
                   handler : () => {
                      if(this.isBeforeOrSameHours(timeBegin,timeClosed)){
-                        self.servicioTasa.AddRate(self.dtKey, self.newRate)
+                        this.service.AddRate(dtKey, self.newRate)
                            .then(async function(){
                               console.log("success");
                               self.ShowMessage('success','Nueva Tasa Guardada con Exito!');
@@ -144,4 +145,15 @@ export class AddRatePage implements OnInit {
          return true;
       }
    }
+
+   doRefresh(event) {
+    console.log('Begin async operation');
+
+    setTimeout(() => {
+      this.navCtrl.navigateRoot("/");
+      event.target.complete();  
+      console.log("refresh")
+    },1000);
+    
+  }
 }

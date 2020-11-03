@@ -67,7 +67,8 @@ export class AppComponent {
       this.authService.authenticationState.subscribe(state=>{
          console.log("ejecutando... authenticationState.subscribe en app-component.ts");
          if (state){
-           console.log(state)
+           console.log(state);
+           console.log("This is State");
            this.router.navigate(['member','add']);
          } else {
            this.router.navigate(['status']);

@@ -1,4 +1,9 @@
-<ion-content>
+<ion-content [fullscreen]="true">
+
+   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+   </ion-refresher>
+
    <ion-header translucent="true">
       <!-- Title Page -->
       <ion-toolbar>
@@ -9,10 +14,6 @@
       </ion-toolbar>
       <!-- / Title Page -->
    </ion-header>
-
-   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-      <ion-refresher-content></ion-refresher-content>
-   </ion-refresher>
 
    <form (ngSubmit)="onSubmit()">
       <ion-card>
@@ -34,7 +35,7 @@
 
    <ion-infinite-scroll  id="infinite-scroll">
       <div *ngFor="let whArray of GroupedWarehouses; index as i">
-      <!-- <a > -->
+      <!-- <a >-->
       <ng-container *ngFor="let wh of whArray; index as j">
          <ion-chip>
             <ion-icon  name="restaurant" size="large"></ion-icon>
