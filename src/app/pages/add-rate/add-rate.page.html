@@ -1,12 +1,17 @@
-<ion-content>
+<ion-content [fullscreen]="true">
+
+   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+   </ion-refresher>
+
    <ion-header translucent="true">
       <ion-toolbar>
-        <ion-title>Arturos Exchange Manager</ion-title>
+        <ion-title>Tasa de Cambio</ion-title>
         <ion-buttons slot="start">
            <ion-menu-button autoHide="true"></ion-menu-button>
         </ion-buttons>
       </ion-toolbar>
-    </ion-header>
+   </ion-header>
 
    <form (ngSubmit)="onSubmit()">
       <ion-card>

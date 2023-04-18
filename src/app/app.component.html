@@ -1,10 +1,13 @@
+<!-- Options Menu Global -->
 <ion-app>
   <ion-menu contentId="contentHome" side="start">
+    <!--Title Content Menu-->
     <ion-header>
       <ion-toolbar>
           <ion-title>Menu</ion-title>
       </ion-toolbar>
     </ion-header>
+    <!--List Content Menu-->
     <ion-content>
        <ion-list>
           <ion-item>
@@ -12,6 +15,11 @@
                <ion-label [routerLink]="['/member/add']">Añadir Tasa</ion-label> 
             </ion-menu-toggle>
           </ion-item>
+          <!-- <ion-item>
+            <ion-menu-toggle>
+               <ion-label [routerLink]="['/member/exclude-rest']">Excluir Restaurantes</ion-label> 
+            </ion-menu-toggle>
+          </ion-item> -->
           <ion-item>
             <ion-menu-toggle>
                <ion-label [routerLink]="['/status']">Consultar Estatus de Replicación</ion-label>

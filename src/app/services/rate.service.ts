@@ -6,7 +6,10 @@ import { IRate } from '../models/irate';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, catchError, mergeMap } from 'rxjs/operators'
 import { AuthenticationService } from './authentication.service';
+//
+//import { DatabaseSnapshotExists, DataSnapshot } from '@angular/fire/database/interfaces';
 import { DataSnapshot } from '@angular/fire/database/interfaces';
+//
 import { ICurrentRate } from '../models/ICurrentRate';
 
 
@@ -18,14 +21,27 @@ export class RateService {
   private ratesCollection: AngularFireList<IRate>;
   private warehouseCollection: AngularFireList<any>;
   private tokensCollection: AngularFireList<any>;
+  //
+  //  private dataExist: DatabaseSnapshotExists<any>;
+  //  private deleteWarehouseById: AngularFireList<any>;
+  //private warehouseCollectionEX: AngularFireList<any>;
+  //private warehouseCollectionDEV: AngularFireList<any>;
   
-  constructor(private afAuth: AngularFireAuth, 
-              private db: AngularFireDatabase,
-              private authsvc: AuthenticationService) { 
-    this.ratesCollection = db.list("currentrates");
-    this.warehouseCollection = db.list("warehouses");
-    this.tokensCollection = db.list("notifications");
-  }
+  constructor(
+    private afAuth: AngularFireAuth, 
+    private db: AngularFireDatabase,
+    private authsvc: AuthenticationService
+    ){ 
+      //this.ratesCollection = db.list("currentrates");
+      this.ratesCollection = db.list("currentrates");
+      this.warehouseCollection = db.list("warehouses");
+      // DESCOMENTAR PARA PRUEBAS EN AMBIENTE DEV.
+      // TODO: tratar de hacer configurable esto desde los archivos .env
+      // this.warehouseCollectionEX = db.list("devwarehousesEX");
+      // this.warehouseCollectionDEV = db.list("devwarehouses");      
+      //
+      this.tokensCollection = db.list("notifications");
+    }
 
   RegisterToken(token: string){
 
@@ -34,7 +50,9 @@ export class RateService {
   }
 
   AddRate(dtKey: string, rate: number): Promise<void>{
-           
+
+    console.log(dtKey);
+    console.log(rate);
     let timeFmt = moment(new Date()).format('YYYY-MM-DD') + 'T';
     timeFmt += moment(new Date()).format('HH:mm:ss');
 
@@ -42,7 +60,18 @@ export class RateService {
 
     return this.ratesCollection.set(dtKey, rateObj);
   } 
-
+  //
+  // GetWarehousesEX():Observable<SnapshotAction<any>[]>{
+  //   return this.warehouseCollectionEX.snapshotChanges();
+  // }
+  // DeleteWarehouse(warehouse){
+  //   //return this.warehouseCollectionDEV.remove(warehouse);
+  //   return this.warehouseCollection.remove(warehouse);
+  // }
+  // AddExcludedRest(warehouse){
+  //   return this.warehouseCollectionEX.set(warehouse, "excluido");
+  // }
+  //
   GetWarehouses():Observable<SnapshotAction<any>[]>{
     return this.warehouseCollection.snapshotChanges();
   }

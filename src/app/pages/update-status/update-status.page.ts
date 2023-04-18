@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { RateService } from 'src/app/services/rate.service';
 import { IWarehouseWithId } from 'src/app/models/IWarehouseUpdated';
 import * as moment from 'moment';
-import { Platform } from '@ionic/angular';
+import { ModalController, NavController, Platform } from '@ionic/angular';
 import { from } from 'rxjs';
 import { mergeMap, zip } from 'rxjs/operators';
 import { ICurrentRate } from 'src/app/models/ICurrentRate';
 import { SnapshotAction } from '@angular/fire/database/database';
+import { ThrowStmt } from '@angular/compiler';
+
+
 
 @Component({
   selector: 'app-update-status',
@@ -20,8 +23,9 @@ export class UpdateStatusPage implements OnInit {
   private GroupedWarehouses: any[];  
   private deviceWidth: number;
   private lastRate: ICurrentRate;
+  private isMobile: boolean;
 
-  constructor(private service: RateService, private platform: Platform) { }
+  constructor(private service: RateService, private platform: Platform,public navCtrl: NavController) { }
 
   ngOnInit() {
     this.currentRateDate = moment(new Date()).format("DD/MM/YYYY")
@@ -41,14 +45,27 @@ export class UpdateStatusPage implements OnInit {
           return result;
         });
 
-        let rowSize: number = 3;
+        let rowSize: number = 4;
         this.deviceWidth = this.platform.width();
         console.log("deviceWidth:" + this.deviceWidth.toString())
         
-        if (this.deviceWidth >= 720)
-          rowSize = 5;
-        else if(this.deviceWidth > 480)
+        this.isMobile = false;
+
+        if (this.platform.platforms().some(r=>r == "cordova" || r == "capacitor")){
+          this.isMobile = true;
           rowSize = 4;
+
+          if (this.deviceWidth < 393)
+              rowSize = 3;
+          else if(this.deviceWidth >= 480)
+              rowSize = 5;          
+        } else { 
+          if (this.deviceWidth >= 720)
+            rowSize = 5;
+          else if(this.deviceWidth > 480)
+            rowSize = 4;
+        }
+
           
         this.GroupedWarehouses = this.splitBy(rowSize,this.warehouses);
 
@@ -70,5 +87,15 @@ export class UpdateStatusPage implements OnInit {
     }, []);
   }
   
+  doRefresh(event) {
+    console.log('Begin async operation');
+
+    setTimeout(() => {
+      this.navCtrl.navigateRoot("/");
+      event.target.complete();  
+      console.log("refresh")
+    },1000);
+    
+  }
 
 }
